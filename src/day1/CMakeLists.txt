@@ -142,7 +142,11 @@ add_executable(Subscriber src/sub.cpp)
 add_executable(Emitter src/emitter.cpp)
 add_executable(Receiver src/receiver.cpp)
 add_executable(User_input src/user_input.cpp)
-add_executable(Average src/arith_avg.cpp)
+
+add_executable(Arith_average src/arith_avg.cpp)
+add_executable(Geo_average src/geo_avg.cpp)
+add_executable(Har_average src/har_avg.cpp)
+add_executable(Med src/med.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -171,9 +175,23 @@ target_link_libraries(User_input
    ${catkin_LIBRARIES}
  )
 
-target_link_libraries(Average
+target_link_libraries(Arith_average
    ${catkin_LIBRARIES}
  )
+
+ target_link_libraries(Geo_average
+   ${catkin_LIBRARIES}
+ )
+
+ target_link_libraries(Har_average
+   ${catkin_LIBRARIES}
+ )
+
+ target_link_libraries(Med
+   ${catkin_LIBRARIES}
+ )
+
+
 #############
 ## Install ##
 #############
