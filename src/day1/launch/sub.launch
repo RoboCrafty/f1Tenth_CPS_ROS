@@ -1,0 +1,5 @@
+<launch>
+  <group ns="day1">
+    <node pkg="day1" name="test_sub" type="Subscriber" output="screen"/>
+  </group>
+</launch>
