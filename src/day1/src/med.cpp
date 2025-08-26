@@ -26,7 +26,7 @@ void callback_med(const std_msgs::Int32::ConstPtr& msg) {
     }
 
     std_msgs::Float32 avg_msg;
-    avg_msg.data = average;
+    avg_msg.data = median;
     pub.publish(avg_msg);
 }
     
