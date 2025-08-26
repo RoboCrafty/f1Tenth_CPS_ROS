@@ -141,6 +141,8 @@ add_executable(Publisher src/pub.cpp)
 add_executable(Subscriber src/sub.cpp)
 add_executable(Emitter src/emitter.cpp)
 add_executable(Receiver src/receiver.cpp)
+add_executable(User_input src/user_input.cpp)
+add_executable(Average src/arith_avg.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -162,6 +164,14 @@ add_executable(Receiver src/receiver.cpp)
    ${catkin_LIBRARIES}
  )
  target_link_libraries(Receiver
+   ${catkin_LIBRARIES}
+ )
+
+target_link_libraries(User_input
+   ${catkin_LIBRARIES}
+ )
+
+target_link_libraries(Average
    ${catkin_LIBRARIES}
  )
 #############
