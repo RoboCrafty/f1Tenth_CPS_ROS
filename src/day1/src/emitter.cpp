@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     // std::uniform_int_distribution distribution(1, 100000);
 
     
-    int num;
+    int num = 0;
    
 
     while (ros::ok()) {
