@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>simulator</name>
+  <name>f110_simulator</name>
   <version>0.0.1</version>
   <description>A simulator of the F1/10 racecar.</description>
 
