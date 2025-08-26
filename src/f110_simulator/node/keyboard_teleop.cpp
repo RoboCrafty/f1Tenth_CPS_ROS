@@ -12,7 +12,7 @@
 #include <ackermann_msgs/AckermannDriveStamped.h>
 
 //                       0:       1:       2:      3:
-float mapping[4][2] = {{1.0, 0.0}, {1.0, -1.0}, {1.0, 1.0}, {-1.0, 0.0}};
+float mapping[4][2] = {{1.0, 0.0}, {1.0, -1.0}, {1.0, 1.0}, {0, 0.0}};
 
 float speed_limit = 1.8;
 float angle_limit = 0.3;
@@ -57,8 +57,8 @@ unsigned keyToIndex(char message) {
   else if (message == 's') {
     res = 3;
   }
-  else {
-    res = 3;
+  else if (message == ' ') {
+    res = 4;
   }
   return res;
 }
