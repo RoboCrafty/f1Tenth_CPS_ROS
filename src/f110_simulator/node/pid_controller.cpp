@@ -29,10 +29,10 @@
 float target = 1.3;
 
 float prev_err = 0;
-float Kp = 1.0f;
+float Kp = 5.0f;
 float Kd = 0.0f;
 
-float speed = 1.0;
+float speed = 1.5;
 float angle = 0.0;
 float speed_limit = 1.8;
 float angle_limit = 0.3;
