@@ -21,11 +21,14 @@
   <node pkg="simulator" name="new node's name" type="new file name" output="screen"/>
   -->
 
-  <!-- <node pkg="f110_simulator" name="keyboard_teleop" type="keyboard_teleop" output="screen"/> -->
-  <node pkg="f110_simulator" name="Random_Controller" type="Random_Controller" output="screen"/>
+  <node pkg="f110_simulator" name="keyboard_teleop" type="keyboard_teleop" output="screen"/>
+  <!-- <node pkg="f110_simulator" name="Random_Controller" type="Random_Controller" output="screen"/> -->
   
   <node pkg="f110_simulator" name="js_driver" type="js_driver" output="screen"/>
 
   <!-- Launch RVIZ -->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find f110_simulator)/launch/simulator.rviz" output="screen"/>
 </launch>
+
+
+

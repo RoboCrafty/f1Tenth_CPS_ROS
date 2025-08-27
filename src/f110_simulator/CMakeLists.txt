@@ -89,10 +89,17 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
   endforeach()
 
 add_executable(Random_Controller node/random.cpp)
+add_executable(PID_Controller node/pid_controller.cpp)
 
 target_link_libraries(Random_Controller
    ${catkin_LIBRARIES}
  )
+
+target_link_libraries(PID_Controller
+  ${catkin_LIBRARIES}
+)
+
+ 
 
   # Install the library
   install(TARGETS ${PROJECT_NAME}
