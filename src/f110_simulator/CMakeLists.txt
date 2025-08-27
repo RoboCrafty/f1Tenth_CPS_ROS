@@ -88,6 +88,12 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
       add_dependencies(${_node_name} f110_simulator_generate_messages_cpp)
   endforeach()
 
+add_executable(Random_Controller node/random.cpp)
+
+target_link_libraries(Random_Controller
+   ${catkin_LIBRARIES}
+ )
+
   # Install the library
   install(TARGETS ${PROJECT_NAME}
       ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
