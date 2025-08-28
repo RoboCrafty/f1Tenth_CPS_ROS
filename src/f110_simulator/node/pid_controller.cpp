@@ -50,7 +50,7 @@ float compute_pd(float min_distance, float* prev_error) {
     *prev_error = error;
 
     return Kp * error;
-    // return Kp * error + Kd * d_error;
+    //return Kp * error + Kd * d_error;
 }
 
 void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
@@ -80,6 +80,9 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     unsigned int index = std::distance(scan_msg->ranges.begin(), it);
 
     float u = compute_pd(min_val, &prev_err);
+
+    // if (u > 0.4f) u = 0.4f;
+    // if (u < -0.4f) u = -0.4f;
 
     // Map steering angle to +/- 
     unsigned int center_index = 1080 / 2;
@@ -131,7 +134,7 @@ int main(int argc, char *argv[]) {
 
   ros::NodeHandle node;
 
-  command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
+  command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/mux_in1", 100);
   ros::Subscriber sub = node.subscribe("scan", 10, callback_scan);
 
   ros::spin();
@@ -139,61 +142,15 @@ int main(int argc, char *argv[]) {
   float speed = 0.0;
   float angle = 0.0;
 
-//   while(ros::ok()) {
-   
 
-//     unsigned index = keyToIndex(input);
-//     speed = mapping[index][0];
-//     angle = mapping[index][1];
-
-//     // Make and publish message
-//     //  Header
-//     std_msgs::Header header;
-//     header.stamp = ros::Time::now();
-//     //  Ackermann
-//     ackermann_msgs::AckermannDrive drive_msg;
-//     drive_msg.speed = speed * speed_limit;
-//     drive_msg.steering_angle = angle * angle_limit;
-//     //  AckermannStamped
-//     ackermann_msgs::AckermannDriveStamped drive_st_msg;
-//     drive_st_msg.header = header;
-//     drive_st_msg.drive = drive_msg;
-//     // publish AckermannDriveStamped message to drive topic
-//     command_pub.publish(drive_st_msg);
-//   }
+  ros::Rate rate(50); // 20 Hz loop rate (adjust as needed)
+  while (ros::ok()) {
+      // ... your main loop code ...
+      ros::spinOnce();
+      rate.sleep();
+  }
   return 0;
 }
 
 
 
-
-// #include "ros/ros.h"
-// #include "std_msgs/Bool.h"
-
-// int odd_msg_count = 0;
-// int even_msg_count = 0;
-
-// void callback_odd(const std_msgs::Bool::ConstPtr& msg) {
-//     odd_msg_count ++; 
-//     std::cout << "Number of odd messages: " << odd_msg_count
-//           << " ---- Number of even messages: " << even_msg_count
-//           << std::endl;
-// }
-
-// void callback_even(const std_msgs::Bool::ConstPtr& msg) {
-//     even_msg_count ++; 
-//     std::cout << "Number of odd messages: " << odd_msg_count
-//           << " ---- Number of even messages: " << even_msg_count
-//           << std::endl;
-// }
-
-// int main(int argc, char **argv) {
-//     ros::init(argc, argv, "Receiver");
-//     ros::NodeHandle node;
-
-    
-//     ros::Subscriber sub = node.subscribe("odd", 10, callback_odd);
-//     ros::Subscriber sub2 = node.subscribe("even", 10, callback_even);
-//     ros::spin();
-//     return 0;
-// }

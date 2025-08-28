@@ -88,16 +88,6 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
       add_dependencies(${_node_name} f110_simulator_generate_messages_cpp)
   endforeach()
 
-add_executable(Random_Controller node/random.cpp)
-add_executable(PID_Controller node/pid_controller.cpp)
-
-target_link_libraries(Random_Controller
-   ${catkin_LIBRARIES}
- )
-
-target_link_libraries(PID_Controller
-  ${catkin_LIBRARIES}
-)
 
  
 

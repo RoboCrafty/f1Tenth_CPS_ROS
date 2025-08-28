@@ -10,6 +10,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
+#include <std_msgs/Bool.h>
 
 //                       0:       1:       2:      3:
 float mapping[4][2] = {{1.0, 0.0}, {1.0, -1.0}, {1.0, 1.0}, {0, 0.0}};
@@ -43,24 +44,40 @@ std_msgs::String stdStringToRosString(std::string message) {
   return msg;
 }
 
-unsigned keyToIndex(char message) {
-  unsigned res;
-  if (message == 'w') {
+unsigned res = 3;
+std_msgs::Bool mode;
+
+void keyToIndex(char message) {
+
+  if (message == 'f') {
+    mode.data = 1;
+  }
+  else if (message == 'k') {
+    mode.data = 0;
+  }
+  else if (message == 'w') {
     res = 0;
+    mode.data = 0;
   }
   else if (message == 'd') {
     res = 1;
+    mode.data = 0;
   }
   else if (message == 'a') {
     res = 2;
+    mode.data = 0;
   }
   else if (message == 's') {
     res = 3;
+    mode.data = 0;
   }
   else if (message == ' ') {
-    res = 4;
+    res = 3;
+    mode.data = 0;
   }
-  return res;
+  else {
+    mode.data = 0;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -68,14 +85,19 @@ int main(int argc, char *argv[]) {
 
   ros::NodeHandle n;
 
-  ros::Publisher command_pub = n.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
+  ros::Publisher command_pub = n.advertise<ackermann_msgs::AckermannDriveStamped>("/mux_in2", 1);
+  ros::Publisher mode_pub = n.advertise<std_msgs::Bool>("/mode", 1);
 
   float speed = 0.0;
   float angle = 0.0;
 
+  ros::Rate rate(20);
+
   while(ros::ok()) {
     char input  = getch();
-    unsigned index = keyToIndex(input);
+    keyToIndex(input);
+    unsigned index = res;
+    mode_pub.publish(mode);
     speed = mapping[index][0];
     angle = mapping[index][1];
 
@@ -91,8 +113,14 @@ int main(int argc, char *argv[]) {
     ackermann_msgs::AckermannDriveStamped drive_st_msg;
     drive_st_msg.header = header;
     drive_st_msg.drive = drive_msg;
-    // publish AckermannDriveStamped message to drive topic
-    command_pub.publish(drive_st_msg);
-  }
-  return 0;
+    // publish AckermannDriveStamped message to drive topic when in keyboard mode
+    if (mode.data == 0) {
+      command_pub.publish(drive_st_msg);
+    }
+    ros::spinOnce();
+    rate.sleep();
+  
+}
+
+return 0;
 }
