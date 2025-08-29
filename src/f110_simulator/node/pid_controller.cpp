@@ -26,13 +26,13 @@
 
 
 
-float target = 1.3;
+float target = 1.25;
 
 float prev_err = 0;
-float Kp = 5.0f;
-float Kd = 0.0f;
+float Kp = 1.0f;
+float Kd = 1.0f;
 
-float speed = 1.5;
+float speed = 3.0;
 float angle = 0.0;
 float speed_limit = 1.8;
 float angle_limit = 0.3;
@@ -46,11 +46,17 @@ float dt = 0;
 
 float compute_pd(float min_distance, float* prev_error) {
     float error = target - min_distance;
-    float d_error = (error - *prev_error) / dt;
-    *prev_error = error;
+    static float smoothed_error = 0.0f;
+    float alpha = 0.1f; // Smoothing factor
+    smoothed_error = alpha * error + (1 - alpha) * smoothed_error;
 
-    return Kp * error;
-    //return Kp * error + Kd * d_error;
+    float d_error = (smoothed_error - *prev_error) / dt;
+    *prev_error = smoothed_error;
+
+    float p_part = Kp * smoothed_error;
+    float d_part = Kd * d_error;
+    std::cout << "Error: " << error << ", Smoothed error: " << smoothed_error << ", Prev err: " << *prev_error << ", P part: " << p_part << ", D part: " << d_part << ", dt is: " << dt << std::endl;
+    return p_part + d_part;
 }
 
 void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
