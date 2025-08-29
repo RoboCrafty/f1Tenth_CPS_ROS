@@ -26,7 +26,7 @@
 
 
 
-float target = 1.25;
+float target = 1.27;
 
 float prev_err = 0;
 float Kp = 1.0f;
