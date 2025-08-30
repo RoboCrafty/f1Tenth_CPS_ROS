@@ -40,7 +40,7 @@ void callback_odom(const nav_msgs::Odometry::ConstPtr& msg) {
         msg->pose.pose.orientation.w
     );
 
-    double roll, pitch, yaw;
+    double roll, pitch;
     tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
     // Velocity in robot frame
