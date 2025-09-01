@@ -26,13 +26,13 @@
 
 
 
-float target = 1.27;
+float target = 1.26;
 
 float prev_err = 0;
 float Kp = 1.0f;
 float Kd = 1.0f;
 
-float speed = 3.0;
+float speed = 2.5;
 float angle = 0.0;
 float speed_limit = 1.8;
 float angle_limit = 0.3;

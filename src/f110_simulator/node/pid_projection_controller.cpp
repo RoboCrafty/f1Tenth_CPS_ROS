@@ -1,4 +1,4 @@
-w#define _GNU_SOURCE
+#define _GNU_SOURCE
 
 #include <iostream>
 #include <string>
@@ -6,6 +6,7 @@ w#define _GNU_SOURCE
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
+#include <cmath>
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -29,13 +30,13 @@ w#define _GNU_SOURCE
 
 
 
-float target = 1.27;
+float target = 1.0;
 
 float prev_err = 0;
 float Kp = 1.0f;
-float Kd = 1.0f;
+float Kd = 0.3f;
 
-float speed = 3.0;
+float speed =2.0;
 float angle = 0.0;
 float speed_limit = 1.8;
 float angle_limit = 0.3;
@@ -79,38 +80,68 @@ void callback_odom(const nav_msgs::Odometry::ConstPtr& msg) {
 
 float compute_pd(float min_distance, float* prev_error) {
     // float projected_distance = min_distance - vx_body*cos(yaw);
-    float projected_distance = min_distance + vx_body * dt * sin(steering_angle_f);
+    float projected_distance = min_distance + vx_body * 0.2 * sin(yaw);
 
     float error = target - projected_distance;
     static float smoothed_error = 0.0f;
     float alpha = 0.1f; // Smoothing factor
     smoothed_error = alpha * error + (1 - alpha) * smoothed_error;
 
-    float d_error = (error - *prev_error) / dt;
-    *prev_error = error;
+    float d_error = (smoothed_error - *prev_error) / dt;
+    *prev_error = smoothed_error;
 
-    float p_part = Kp * error;
+    float p_part = Kp * smoothed_error;
     float d_part = Kd * d_error;
     // std::cout << "Error: " << error << ", Smoothed error: " << smoothed_error << ", Prev err: " << *prev_error << ", P part: " << p_part << ", D part: " << d_part << ", dt is: " << dt << std::endl;
-    std::cout << "projected_distance: " << projected_distance << ", Min distance: " << min_distance << ", Vx_body: " << vx_body << ", yaw: " << yaw << ", D part: " << std::endl;
 
-    return p_part + d_part;
+
+    float steering_angle = p_part + d_part;
+
+    if (error < 0) {
+        steering_angle = fabs(steering_angle);
+    }
+    else if (error > 0) {
+        steering_angle = -fabs(steering_angle);
+    }
+    std::cout << "projected_distance: " << projected_distance << ", error is: " << error << ", steering angle: " << steering_angle << ", yaw: " << sin(yaw) << std::endl;
+
+    
+    return steering_angle;
 }
 
 void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
     float min_val = 0; 
-    unsigned int n = scan_msg->ranges.size();
+    // unsigned int n = scan_msg->ranges.size();
     // ldp = ld_alloc_new(n);
+    // pick two angles in radians relative to scan
+    float angle_a = 3.14/2;     // 90 deg left
+    float angle_b = 0.52;     // 20 deg left-forward
 
-    // Find min element in scan_msg->ranges
-    auto it = std::min_element(scan_msg->ranges.begin(), scan_msg->ranges.end());
-    
+    // convert angles to indices
+    int index_b = (int)((angle_b - scan_msg->angle_min) / scan_msg->angle_increment);
+    int index_a = (int)((angle_a - scan_msg->angle_min) / scan_msg->angle_increment);
+    std::cout << "index a: " << index_a << ", index b: " << index_b << ", Vx_body: " << vx_body << ", yaw: " << sin(yaw) << std::endl;
+
+    // get distances at those indices
+    float dA = scan_msg->ranges[index_a];
+    float dB = scan_msg->ranges[index_b];
+
+    // wall-follow distance estimate
+    float alpha = atan2(dA * cos(angle_a - angle_b) - dB,
+                        dA * sin(angle_a - angle_b));
+
+    std::cout << "alpha: " << alpha
+                << ", dA: " << dA 
+                << ", dB: " << dB
+    << std::endl;
+
+    float distance_from_wall = dB * cos(alpha);
     
     // // Get timestamp and calc dt
     // ts_now = scan_msg->header.stamp.toNSec();
     // dt = ts_now - ts_prev;
-    // ts_prev = ts_now;
+    // ts_prev = ts_now;x
 
     //static ros::Time ts_prev = scan_msg->header.stamp; // initialize first time
 
@@ -118,25 +149,8 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     ros::Duration dt_duration = ts_now - ts_prev;      // safely handles sec + nsec
     dt = dt_duration.toSec();                  // now in seconds
 
-    
 
-    min_val = *it;
-    unsigned int index = std::distance(scan_msg->ranges.begin(), it);
-
-    float u = compute_pd(min_val, &prev_err);
-
-    // if (u > 0.4f) u = 0.4f;
-    // if (u < -0.4f) u = -0.4f;
-
-    // Map steering angle to +/- 
-    unsigned int center_index = 1080 / 2;
-    int direction = (index - center_index);
-
-    float steering_angle = u;
-    if (direction > 0) {
-        steering_angle = -steering_angle;
-    }
-
+    float u = compute_pd(distance_from_wall, &prev_err);
 
 
 
@@ -148,7 +162,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     //  Ackermann
     ackermann_msgs::AckermannDrive drive_msg;
     drive_msg.speed = speed * speed_limit;
-    drive_msg.steering_angle = steering_angle * angle_limit;
+    drive_msg.steering_angle = u * angle_limit;
     //  AckermannStamped
     ackermann_msgs::AckermannDriveStamped drive_st_msg;
     drive_st_msg.header = header;
@@ -157,11 +171,8 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     command_pub.publish(drive_st_msg);
 
     std::cout << std::fixed << std::setprecision(10);
-    std::cout << "Closest obstacle at: " << min_val 
-              << " meters, index: " << index 
-              << " u is: "<< u 
-              << " steering angle is: "<< steering_angle 
-              << " direction is: "<< direction << std::endl;
+    std::cout << "Distance from wall: " << distance_from_wall 
+          << ", u: " << u << std::endl;
 
     ts_prev = ts_now;  // update previous timestamp
 
@@ -183,13 +194,13 @@ int main(int argc, char *argv[]) {
   ros::Subscriber sub2 = node.subscribe("odom", 10, callback_odom);
   ros::Subscriber drive_sub = node.subscribe("/drive", 10, callback_drive);
 
-  ros::spin();
+   ros::spin();
 
   float speed = 0.0;
   float angle = 0.0;
 
 
-  ros::Rate rate(50); // 20 Hz loop rate (adjust as needed)
+  ros::Rate rate(10); // 20 Hz loop rate (adjust as needed)
   while (ros::ok()) {
       // ... your main loop code ...
       ros::spinOnce();
