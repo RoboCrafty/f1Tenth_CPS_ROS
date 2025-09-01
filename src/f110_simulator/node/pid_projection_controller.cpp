@@ -56,7 +56,7 @@ float steering_angle_f=0.0;
 void callback_drive(const ackermann_msgs::AckermannDriveStamped::ConstPtr& msg) {
     // Extract the steering angle from the message
     steering_angle_f = msg->drive.steering_angle;
-\
+    ROS_INFO("Current_Steering_angle = %f rad", steering_angle_f);
 }
 
 
