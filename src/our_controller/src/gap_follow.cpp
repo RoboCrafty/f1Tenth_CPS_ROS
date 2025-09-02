@@ -30,7 +30,7 @@
 
 // float target = 1.26;
 
-float Kp = 0.4f;
+float Kp = 0.55f;
 float Kd = 0.0f;
 float prev_error = 0;
 
@@ -109,8 +109,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
   int gap_center = (max_gap_start + max_gap_end) / 2;
   float steering_angle = (gap_center - 540) * scan_msg->angle_increment;
 
-  ROS_INFO("Gap: start=%d, end=%d, center=%d, angle_increment=%f", max_gap_start, max_gap_end, gap_center, scan_msg->angle_increment);
-  ROS_INFO("Steering_angle = %f rad", steering_angle);
+
 
 // PD controller for steering  
     if (ts_prev.isZero()) {
@@ -143,7 +142,8 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
     ts_prev = ts_now;  // update previous timestamp
 
-
+  ROS_INFO("Gap: start=%d, end=%d, center=%d, angle_increment=%f", max_gap_start, max_gap_end, gap_center, scan_msg->angle_increment);
+  ROS_INFO("Steering_angle = %f rad", steering_angle);
 
     // Make and publish message
     //  Header
