@@ -30,11 +30,11 @@
 
 // float target = 1.26;
 
-float Kp = 0.55f;
-float Kd = 0.05f;
+float Kp = 0.60f;
+float Kd = 0.090f;
 float prev_error = 0;
 
-float speed = 1.80;
+float speed = 2.5;
 float angle = 0.0;
 float speed_limit = 1;
 float steering_multiplier = 1;
