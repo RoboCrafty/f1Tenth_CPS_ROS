@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Launch a map from the maps folder-->
+  <!-- <arg name="map" default="$(find f110_simulator)/maps/race_track.yaml"/> -->
+  <!-- <node pkg="map_server" name="map_server" type="map_server" args="$(arg map)"/> -->
+
+  <!-- Launch the racecar model -->
+  <!-- <include file="$(find f110_simulator)/launch/racecar_model.launch"/> -->
+
+  <!-- Begin the simulator with the parameters from params.yaml -->
+  <!-- <node pkg="f110_simulator" name="f110_simulator" type="simulator" output="screen">
+    <rosparam command="load" file="$(find f110_simulator)/params.yaml"/>
+  </node> -->
+
+  <!-- Launch the Keyboard Node -->
+  <!-- Insert keyboard node declaration here. Have a look at the template below and follow the syntax. -->
+
+  <!-- Node declaration template -->
+  <!--
+  <node pkg="simulator" name="new node's name" type="new file name" output="screen"/>
+  -->
+
+  <node pkg="our_controller" name="keyboard_teleop" type="keyboard_teleop" output="screen"/>
+  <node pkg="our_controller" name="Gap_Follow_Controller" type="Gap_Follow_Controller" output="screen"/>
+  <node pkg="our_controller" name="Multiplexer" type="Multiplexer" output="screen"/>
+
+</launch>
+
+
+

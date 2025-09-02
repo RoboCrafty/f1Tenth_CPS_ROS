@@ -28,16 +28,16 @@
 
 
 
-float target = 1.26;
+// float target = 1.26;
 
-float Kp = 9.0f;
-float Kd = 0.1f;
+float Kp = 0.3f;
+float Kd = 0.0f;
 float prev_error = 0;
 
-float speed = 7.0;
+float speed = 1.0;
 float angle = 0.0;
 float speed_limit = 1;
-float steering_multiplier = 0.3;
+float steering_multiplier = 1;
 float current_steering_angle = 0.0; // to hold current steering angle from /drive topic
 
 ros::Publisher command_pub;
@@ -50,7 +50,7 @@ float dt = 0;
 void callback_drive(const ackermann_msgs::AckermannDriveStamped::ConstPtr& msg) {
     // Extract the steering angle from the message
     current_steering_angle = msg->drive.steering_angle;
-    ROS_INFO("Current_Steering_angle = %f rad", current_steering_angle);
+    // ROS_INFO("Current_Steering_angle = %f rad", current_steering_angle);
 }
 
 
@@ -66,10 +66,10 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
 
   // Gap finding parameters
-  float threshold = 2.0; // meters, adjust as needed
+  float threshold = 1.5; // meters, adjust as needed
   int start_idx = -1, end_idx = -1;
   int max_gap_start = -1, max_gap_end = -1, max_gap_size = 0;
-  int scan_start = 270, scan_end = 810; // -90 to +90 degrees in front
+  int scan_start = 180, scan_end = 900; // -90 to +90 degrees in front
 
   // Find the largest gap in the specified range
   bool in_gap = false;
@@ -137,7 +137,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
     float p_part = Kp * smoothed_error;
     float d_part = Kd * d_error;
-    std::cout << "Error: " << error << ", d error: " << d_error << ", Prev err: " << prev_error << ", P part: " << p_part << ", D part: " << d_part << ", dt is: " << dt << std::endl;
+    //std::cout << "Error: " << error << ", d error: " << d_error << ", Prev err: " << prev_error << ", P part: " << p_part << ", D part: " << d_part << ", dt is: " << dt << std::endl;
 
     steering_angle = p_part + d_part;
 
@@ -179,7 +179,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
 
 int main(int argc, char *argv[]) {
-  ros::init(argc, argv, "PID_Controller");
+  ros::init(argc, argv, "Gap_Follow_Controller");
 
   ros::NodeHandle node;
 

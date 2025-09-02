@@ -10,10 +10,10 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
-#include <std_msgs/Bool.h>
+#include <std_msgs/Int32.h>
 
 //                       0:       1:       2:      3:
-float mapping[4][2] = {{1.0, 0.0}, {1.0, -1.0}, {1.0, 1.0}, {0, 0.0}};
+float mapping[4][2] = {{0.3, 0.0}, {0.3, -1.0}, {0.3, 1.0}, {0, 0.0}};
 
 float speed_limit = 1.8;
 float angle_limit = 0.3;
@@ -45,7 +45,7 @@ std_msgs::String stdStringToRosString(std::string message) {
 }
 
 unsigned res = 3;
-std_msgs::Bool mode;
+std_msgs::Int32 mode;
 
 void keyToIndex(char message) {
 
@@ -53,30 +53,34 @@ void keyToIndex(char message) {
     mode.data = 1;
   }
   else if (message == 'k') {
-    mode.data = 0;
+    mode.data = 2;
   }
   else if (message == 'w') {
     res = 0;
-    mode.data = 0;
+    mode.data = 2;
+  }
+  else if (message == 'j') {
+    res = 0;
+    mode.data = 3;
   }
   else if (message == 'd') {
     res = 1;
-    mode.data = 0;
+    mode.data = 2;
   }
   else if (message == 'a') {
     res = 2;
-    mode.data = 0;
+    mode.data = 2;
   }
   else if (message == 's') {
     res = 3;
-    mode.data = 0;
+    mode.data = 2;
   }
   else if (message == ' ') {
     res = 3;
-    mode.data = 0;
+    mode.data = 2;
   }
   else {
-    mode.data = 0;
+    mode.data = 2;
   }
 }
 
@@ -86,7 +90,7 @@ int main(int argc, char *argv[]) {
   ros::NodeHandle n;
 
   ros::Publisher command_pub = n.advertise<ackermann_msgs::AckermannDriveStamped>("/mux_in2", 1);
-  ros::Publisher mode_pub = n.advertise<std_msgs::Bool>("/mode", 1);
+  ros::Publisher mode_pub = n.advertise<std_msgs::Int32>("/mode", 1);
 
   float speed = 0.0;
   float angle = 0.0;
@@ -114,7 +118,7 @@ int main(int argc, char *argv[]) {
     drive_st_msg.header = header;
     drive_st_msg.drive = drive_msg;
     // publish AckermannDriveStamped message to drive topic when in keyboard mode
-    if (mode.data == 0) {
+    if (mode.data == 2) {
       command_pub.publish(drive_st_msg);
     }
     ros::spinOnce();
