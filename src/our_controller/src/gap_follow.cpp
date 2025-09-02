@@ -30,11 +30,11 @@
 
 // float target = 1.26;
 
-float Kp = 0.4f;
+float Kp = 0.2f;
 float Kd = 0.0f;
 float prev_error = 0;
 
-float speed = 1.5;
+float speed = 6.0;
 float angle = 0.0;
 float speed_limit = 1;
 float steering_multiplier = 1;
@@ -66,7 +66,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
 
   // Gap finding parameters
-  float threshold = 1.25; // meters, adjust as needed
+  float threshold = 1.00; // meters, adjust as needed
   int start_idx = -1, end_idx = -1;
   int max_gap_start = -1, max_gap_end = -1, max_gap_size = 0;
   int scan_start = 180, scan_end = 900; // -90 to +90 degrees in front
@@ -106,11 +106,20 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
   }
 
   // Pick the center of the largest gap
-  int gap_center = (max_gap_start + max_gap_end) / 2;
-  float steering_angle = (gap_center - 540) * scan_msg->angle_increment;
+  // int gap_center = (max_gap_start + max_gap_end) / 2;
+  // float steering_angle = (gap_center - 540) * scan_msg->angle_increment;
 
-  ROS_INFO("Gap: start=%d, end=%d, center=%d, angle_increment=%f", max_gap_start, max_gap_end, gap_center, scan_msg->angle_increment);
-  ROS_INFO("Steering_angle = %f rad", steering_angle);
+  // Find the index with the highest range value within the largest gap
+  int best_idx = max_gap_start;
+  float best_range = scan_msg->ranges[max_gap_start];
+  for (int i = max_gap_start + 1; i <= max_gap_end; ++i) {
+    if (scan_msg->ranges[i] > best_range) {
+      best_range = scan_msg->ranges[i];
+      best_idx = i;
+    }
+  }
+  float steering_angle = (best_idx - 540) * scan_msg->angle_increment;
+
 
 // PD controller for steering  
     if (ts_prev.isZero()) {
@@ -135,7 +144,9 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     float d_error = (smoothed_error - prev_error) / 0.1;
     prev_error = smoothed_error;
 
-    float p_part = Kp * smoothed_error;
+    // float p_part = Kp * smoothed_error;
+    float p_part = Kp * error;
+
     float d_part = Kd * d_error;
     //std::cout << "Error: " << error << ", d error: " << d_error << ", Prev err: " << prev_error << ", P part: " << p_part << ", D part: " << d_part << ", dt is: " << dt << std::endl;
 
@@ -144,6 +155,8 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     ts_prev = ts_now;  // update previous timestamp
 
 
+  ROS_INFO("Gap: start=%d, end=%d, steering towards index=%d, angle_increment=%f", max_gap_start, max_gap_end, best_idx, scan_msg->angle_increment);
+  ROS_INFO("Steering_angle = %f rad", steering_angle);
 
     // Make and publish message
     //  Header

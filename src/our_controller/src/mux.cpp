@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
 
   ros::NodeHandle node;
 
-  command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/vesc/low_level/ackermann_cmd_mux/input/teleop", 1);
-  // command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
+  // command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/vesc/low_level/ackermann_cmd_mux/input/teleop", 1);
+  command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
   ros::Subscriber mode_sub = node.subscribe("/mode", 1, callback_mode);
   ros::Subscriber sub1 = node.subscribe("/mux_in1", 10, callback_mux1);
   ros::Subscriber sub2 = node.subscribe("/mux_in2", 10, callback_mux2);
