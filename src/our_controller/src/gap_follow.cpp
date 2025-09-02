@@ -34,7 +34,7 @@ float Kp = 0.55f;
 float Kd = 0.05f;
 float prev_error = 0;
 
-float speed = 2.05;
+float speed = 1.80;
 float angle = 0.0;
 float speed_limit = 1;
 float steering_multiplier = 1;
