@@ -31,10 +31,10 @@
 // float target = 1.26;
 
 float Kp = 0.55f;
-float Kd = 0.0f;
+float Kd = 0.05f;
 float prev_error = 0;
 
-float speed = 1.5;
+float speed = 2.05;
 float angle = 0.0;
 float speed_limit = 1;
 float steering_multiplier = 1;
@@ -131,7 +131,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
     float alpha = 0.1f; // Smoothing factor
     smoothed_error = alpha * error + (1 - alpha) * smoothed_error;
 
-    float d_error = (smoothed_error - prev_error) / 0.1;
+    float d_error = (smoothed_error - prev_error) / (1.0/40.0);
     prev_error = smoothed_error;
 
     float p_part = Kp * smoothed_error;
