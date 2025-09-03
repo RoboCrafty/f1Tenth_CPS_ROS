@@ -31,7 +31,7 @@
 // float target = 1.26;
 
 float Kp = 0.60f;
-float Kd = 0.090f;
+float Kd = 0.09f;
 float prev_error = 0;
 
 float speed = 2.5;
@@ -66,7 +66,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
 
   // Gap finding parameters
-  float threshold = 1.25; // meters, adjust as needed
+  float threshold = 2.0; // meters, adjust as needed
   int start_idx = -1, end_idx = -1;
   int max_gap_start = -1, max_gap_end = -1, max_gap_size = 0;
   int scan_start = 180, scan_end = 900; // -90 to +90 degrees in front
@@ -145,14 +145,30 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
   ROS_INFO("Gap: start=%d, end=%d, center=%d, angle_increment=%f", max_gap_start, max_gap_end, gap_center, scan_msg->angle_increment);
   ROS_INFO("Steering_angle = %f rad", steering_angle);
 
+
+// Scale fw speed to slow down if obstacle close ahead
+  float max_forward_distance = 0.0;
+  for (int i = 510; i <= 570; i++) { // small window in front
+      if (scan_msg->ranges[i] > max_forward_distance) {
+          max_forward_distance = scan_msg->ranges[i];
+      }
+  }
+
+  // Scale speed with distance ahead
+  float max_speed = 4.5f;
+  float k = 0.7f;  // tuning factor
+  float safe_speed = max_speed * (1.0f - exp(-k * max_forward_distance));
+  ackermann_msgs::AckermannDrive drive_msg;
+  //float safe_speed = std::min(3.0f, 0.5f * max_forward_distance); // cap at 3 m/s
+  drive_msg.speed = safe_speed;
     // Make and publish message
     //  Header
 
     std_msgs::Header header;
     header.stamp = ros::Time::now();
     //  Ackermann
-    ackermann_msgs::AckermannDrive drive_msg;
-    drive_msg.speed = speed * speed_limit;
+    
+    //drive_msg.speed = speed * speed_limit;
     drive_msg.steering_angle = steering_angle * steering_multiplier;
     //  AckermannStamped
     ackermann_msgs::AckermannDriveStamped drive_st_msg;
