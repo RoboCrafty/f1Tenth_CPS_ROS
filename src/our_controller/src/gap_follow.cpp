@@ -31,10 +31,10 @@
 // float target = 1.26;
 
 float Kp = 0.60f;
-float Kd = 0.09f;
+float Kd = 0.12f;
 float prev_error = 0;
 
-float speed = 2.5;
+
 float angle = 0.0;
 float speed_limit = 1;
 float steering_multiplier = 1;
@@ -66,7 +66,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
 
 
   // Gap finding parameters
-  float threshold = 2.0; // meters, adjust as needed
+  float threshold = 2.25; // meters, adjust as needed
   int start_idx = -1, end_idx = -1;
   int max_gap_start = -1, max_gap_end = -1, max_gap_size = 0;
   int scan_start = 180, scan_end = 900; // -90 to +90 degrees in front
@@ -155,8 +155,8 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
   }
 
   // Scale speed with distance ahead
-  float max_speed = 4.5f;
-  float k = 0.7f;  // tuning factor
+  float max_speed = 5.5f;
+  float k = 0.5f;  // tuning factor
   float safe_speed = max_speed * (1.0f - exp(-k * max_forward_distance));
   ackermann_msgs::AckermannDrive drive_msg;
   //float safe_speed = std::min(3.0f, 0.5f * max_forward_distance); // cap at 3 m/s
@@ -206,16 +206,10 @@ int main(int argc, char *argv[]) {
 
   ros::spin();
 
-  float speed = 0.0;
-  float angle = 0.0;
 
 
-  ros::Rate rate(50); // 20 Hz loop rate (adjust as needed)
-  while (ros::ok()) {
-      // ... your main loop code ...
-      ros::spinOnce();
-      rate.sleep();
-  }
+
+
   return 0;
 }
 
