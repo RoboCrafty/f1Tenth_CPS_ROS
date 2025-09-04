@@ -77,19 +77,19 @@ source devel/setup.bash
 **Note:**
 If you encounter compilation errors, you likely need to install missing dependencies. For example, if you see errors related to `ackermann_msgs`, you can install it with:
 
-    ```bash
+    ```
     sudo apt-get install ros-<distro>-ackermann-msgs
     ```
-    Replace `<distro>` with your ROS distribution (e.g., `melodic`, `noetic`).
+Replace `<distro>` with your ROS distribution (e.g., `melodic`, `noetic`).
 
-    Similarly, install any other missing ROS packages as indicated by the error messages.
-    ```
+Similarly, install any other missing ROS packages as indicated by the error messages.
+
 
 ## How to Run
 
 Launch files are provided in each package's `launch/` directory. For example, to run the simulator:
 
-    ```bash
+    ```
     roslaunch f110_simulator simulator.launch
     ```
 
