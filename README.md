@@ -65,6 +65,7 @@ f1Tenth_CPS_ROS/
 │   ├── f110_simulator/   # Main simulator and vehicle nodes
 │   │   ├── include/
 │   │   ├── launch/
+│   │   │   ├── simulator.launch
 │   │   ├── lidar_env/
 │   │   ├── maps/
 │   │   ├── node/
@@ -82,7 +83,7 @@ f1Tenth_CPS_ROS/
 │   │   └── package.xml
 │   └── our_controller/   # Custom controllers and experiments
 │   │   ├── launch/
-
+│   │   │   ├── controller.launch
 │   │   ├── src/
 │   │   │   ├── gap_follow.cpp
 │   │   │   ├── keyboard_teleop.cpp
