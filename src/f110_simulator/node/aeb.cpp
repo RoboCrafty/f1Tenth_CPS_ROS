@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include <ros/ros.h>
-#include <std_msgs/Bool.h>
+#include <std_msgs/Int32.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
 #include <sensor_msgs/LaserScan.h>
 #include <nav_msgs/Odometry.h>
@@ -22,7 +22,7 @@ double vx_world_ = 0.0;    // velocity in world x
 double vy_world_ = 0.0;    // velocity in world y
 double vx_body = 0.0;      // velocity in robot frame
 double ttc_threshold = 0.4; // time-to-collision threshold
-std_msgs::Bool mode;        // mode message
+std_msgs::Int32 mode;        // mode message
 ros::Time action_start_time;
 bool braking = false;       // braking state flag
 
@@ -93,7 +93,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
                 drive_st_msg.drive = drive_msg;
                 command_pub.publish(drive_st_msg);
 
-                mode.data = 0;
+                mode.data = 2; // switch to keyboard mode
                 mode_pub.publish(mode);
             } else {
                 // Keep reversing
@@ -106,7 +106,7 @@ void callback_scan(const sensor_msgs::LaserScan::ConstPtr& scan_msg) {
                 command_pub.publish(drive_st_msg);
 
                 // Ensure mode is switched
-                mode.data = 0;
+                mode.data = 2;
                 mode_pub.publish(mode);
             }
         }
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 
     // Publishers
     command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/mux_in3", 100);
-    mode_pub = node.advertise<std_msgs::Bool>("/mode", 1);
+    mode_pub = node.advertise<std_msgs::Int32>("/mode", 1);
 
     // Subscribers
     ros::Subscriber scan_sub = node.subscribe("scan", 10, callback_scan);

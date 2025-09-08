@@ -1,7 +1,41 @@
 # IMPORTANT NOTE
 
-Anyone viewing this repository is strongly encouraged to go through the commit history. The commit log is very detailed and contains many different commits for a wide variety of tasks, making it a valuable resource for understanding the project's development and the rationale behind specific changes.
+Anyone viewing this repository is strongly encouraged to go through the commit history. The commit log is very detailed and contains many different commits for a wide variety of tasks, making it a valuable resource for understanding the project's development and the rationale behind specific changes.  
 
+Additionally, please pay special attention to the multiplexer setup and controller selection:
+
+- **Multiplexer setup:**  
+  The multiplexer node is located at:  
+  `our_controller/src/mux.cpp`  
+  Depending on whether you are testing in simulation or on the real vehicle, you must adjust the topics in this file:  
+  - **Simulation:**  
+    - Comment out the line that publishes to `/vesc/low_level/ackermann_cmd_mux/input/teleop`  
+    - Uncomment the line that publishes to `/drive`  
+  - **Real car:**  
+    - Uncomment the line that publishes to `/vesc/low_level/ackermann_cmd_mux/input/teleop`  
+    - Comment out the line that publishes to `/drive`  
+
+- **Controller launch file:**  
+  The custom controller launch file used in this report is located at:  
+  `our_controller/launch/controller.launch`  
+  In this file, you can select which controller to run by commenting/uncommenting the corresponding nodes:  
+  - Gap Follower Controller (`Gap_Follow_Controller`)  
+  - PID Controller (`pid_controller`)  
+  - PID Projection Controller (`pid_projection_controller`)  
+  - AEB (`aeb`) – always keep uncommented for safety  
+
+  Example: in the current setup, the Gap Follower and AEB are uncommented. To run a different controller, simply uncomment the desired controller node and comment out the others.
+
+- **Simulator launch file:**  
+  The provided simulator launch file is located at:  
+  `f110_simulator/launch/simulator.launch`  
+  Launch the simulator first before running your controller launch file.
+
+Following these instructions ensures the correct topics and controllers are active depending on your setup.
+
+
+
+This ensures the correct topic is used depending on whether you are simulating or running on the real vehicle.
 # F1Tenth CPS Lab
 
 A ROS-based autonomous vehicle simulation and control project for the F1Tenth platform. This repository contains simulation environments, controllers, and utility nodes for developing and testing autonomous driving algorithms.
@@ -48,6 +82,7 @@ f1Tenth_CPS_ROS/
 │   │   └── package.xml
 │   └── our_controller/   # Custom controllers and experiments
 │   │   ├── launch/
+
 │   │   ├── src/
 │   │   │   ├── gap_follow.cpp
 │   │   │   ├── keyboard_teleop.cpp

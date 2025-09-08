@@ -2,8 +2,19 @@
 <launch>
 
   <node pkg="our_controller" name="keyboard_teleop" type="keyboard_teleop" output="screen"/>
-  <node pkg="our_controller" name="Gap_Follow_Controller" type="Gap_Follow_Controller" output="screen"/>
   <node pkg="our_controller" name="Multiplexer" type="Multiplexer" output="screen"/>
+  
+  <!-- <node pkg="f110_simulator" name="pid_controller" type="pid_controller" output="screen"/> -->
+  <!-- <node pkg="f110_simulator" name="pid_projection_controller" type="pid_projection_controller" output="screen"/> -->
+  <node pkg="our_controller" name="Gap_Follow_Controller" type="Gap_Follow_Controller" output="screen"/>
+
+  <node pkg="f110_simulator" name="AEB" type="aeb" output="screen"/>
+
+
+  
+
+
+  
 
 </launch>
 

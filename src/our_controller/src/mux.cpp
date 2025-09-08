@@ -58,10 +58,10 @@ int main(int argc, char *argv[]) {
     ros::NodeHandle node;
 
     // Publisher for drive commands to real car
-    command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/vesc/low_level/ackermann_cmd_mux/input/teleop", 1);\
+    // command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/vesc/low_level/ackermann_cmd_mux/input/teleop", 1);\
 
     // Publisher for drive commands to simulator.
-    // command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
+    command_pub = node.advertise<ackermann_msgs::AckermannDriveStamped>("/drive", 1);
 
     // Subscribers for mode and control inputs
     ros::Subscriber mode_sub = node.subscribe("/mode", 1, callback_mode);

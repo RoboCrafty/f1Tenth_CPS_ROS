@@ -14,7 +14,7 @@
 
 // Mapping of keys to speed and steering values
 // index: 0 = forward, 1 = right, 2 = left, 3 = stop
-float mapping[4][2] = {{0.3, 0.0}, {0.3, -1.0}, {0.3, 1.0}, {0, 0.0}};
+float mapping[4][2] = {{1.0, 0.0}, {1.0, -1.0}, {1.0, 1.0}, {0, 0.0}};
 
 // Limits for scaling speed and steering angle
 float speed_limit = 1.8;
